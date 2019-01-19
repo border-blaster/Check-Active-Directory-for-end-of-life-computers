@@ -2,7 +2,7 @@
 ### https://github.com/border-blaster/Check-Active-Directory-for-end-of-life-computers
 #### 2019-01-18
 
-The object of this script is to find out what computer objects joined to an avtive directory domain
+The object of this script is to find out what computer objects joined to an active directory domain
 have Windows OSs that have passed their end of life or exteneded support. Also, the script lists
 computer objects have less than a year until they make it to end of life. 
 
