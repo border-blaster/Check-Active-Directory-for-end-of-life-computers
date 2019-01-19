@@ -7,6 +7,7 @@ have Windows OSs that have passed their end of life or exteneded support. Also, 
 computer objects have less than a year until they make it to end of life. 
 
 Useage:
+- You only need to download and run Find-EOL-AD-computers.ps1
 - Run the script with apropiate credintals to read computer object OS and OS versions.
 - The script checks the csv hosted on gitup for OS, OS Version, and EOL information, so you 
   will need internet access to run. *Or you can download the csv and import directly.
