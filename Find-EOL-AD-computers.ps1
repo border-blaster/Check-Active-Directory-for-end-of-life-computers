@@ -1,5 +1,5 @@
 ### https://github.com/border-blaster/Check-Active-Directory-for-end-of-life-computers
-### v.2019-01-22
+### v.2019-04-17
 
 ### Register functions for later
 function HashMarks {
@@ -12,7 +12,7 @@ function HashMarks {
 
 
 ### Get the OS EOL data from Github. 
-$FullyOSEOL = ConvertFrom-CSV (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/border-blaster/Check-Active-Directory-for-end-of-life-computers/master/os_eol_data.csv').ToString()
+$FullyOSEOL = ConvertFrom-CSV (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/border-blaster/Check-Active-Directory-for-end-of-life-computers/master/os_eol_data.csv' -UseBasicParsing).ToString()
 
 $CompsWithVersions = Get-ADComputer  -Filter 'Operatingsystem -like "*Windows*"'  -Properties operatingsystem, operatingsystemversion | select-object name, operatingsystem, operatingsystemversion | Sort-Object name
 ###
