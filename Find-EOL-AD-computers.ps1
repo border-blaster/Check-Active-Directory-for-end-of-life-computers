@@ -1,5 +1,5 @@
 ### https://github.com/border-blaster/Check-Active-Directory-for-end-of-life-computers
-### v.2019-04-17
+### v.2019-04-22
 
 ### Register functions for later
 function HashMarks {
@@ -7,7 +7,7 @@ function HashMarks {
     do {
         write-host "#" -NoNewline
         $mark++
-      } until ($mark -eq 60)
+      } until ($mark -eq 80)
 }
 
 
@@ -20,38 +20,21 @@ $CompsWithVersions = Get-ADComputer  -Filter 'Operatingsystem -like "*Windows*"'
 #Out of date
 $OutOfDate = @()
 foreach ($EOLDate in $FullyOSEOL) {
-    if ([datetime]::parseexact($EOLDate.EOLDate, 'yyyy-MM-dd', $null) -lt (get-date)) {
-        foreach ($Compo in $CompsWithVersions) {
-            if ($Compo.operatingsystem -eq $EOLDate.OS -and $Compo.operatingsystemversion -eq $EOLDate.OSVer) {
-                $OutOfDate += $Compo
-            }
+    foreach ($Compo in $CompsWithVersions) {
+        if ($Compo.operatingsystem -eq $EOLDate.OS -and $Compo.operatingsystemversion -eq $EOLDate.OSVer) {
+            $OutOfDate += @([PSCustomObject]@{Name = $compo.Name;  Operatingsystem = $Compo.operatingsystem; Operatingsystemversion = $Compo.operatingsystemversion; EOLDate = $EOLDate.EOLDate})
         }
     }
 }
 
-#Out of date in 1 year
-$1yOutOfDate = @()
-foreach ($EOLDate in $FullyOSEOL) {
-    if ([datetime]::parseexact($EOLDate.EOLDate, 'yyyy-MM-dd', $null) -gt (get-date) -and [datetime]::parseexact($EOLDate.EOLDate, 'yyyy-MM-dd', $null) -lt (get-date).AddMonths(12) ) {
-        foreach ($Compo in $CompsWithVersions) {
-            if ($Compo.operatingsystem -eq $EOLDate.OS -and $Compo.operatingsystemversion -eq $EOLDate.OSVer) {
-                $1yOutOfDate += $Compo
-            }
-        }
-    }
-}
 
-#Good for at least a year - You don't really need to do this part as these comptuers won't need to be replaced for awhile.
-$1yplusOutOfDate = @()
-foreach ($EOLDate in $FullyOSEOL) {
-    if ([datetime]::parseexact($EOLDate.EOLDate, 'yyyy-MM-dd', $null) -gt (get-date).AddMonths(12) ) {
-        foreach ($Compo in $CompsWithVersions) {
-            if ($Compo.operatingsystem -eq $EOLDate.OS -and $Compo.operatingsystemversion -eq $EOLDate.OSVer) {
-                $1yplusOutOfDate += $Compo
-            }
-        }
+
+#Add the days left until EOL
+$SystemsWithEOLdays = @()
+foreach ($SingleDate in $OutofDate) {
+    #$DaystoGo = (New-TimeSpan -end $SingleDate.EOLDate -start (get-date -Format yyyy-MM-dd)).days
+    $SystemsWithEOLdays += @([PSCustomObject]@{Name = $SingleDate.Name;  OS = $SingleDate.operatingsystem; OSver = $SingleDate.operatingsystemversion; EOLDate = $SingleDate.EOLDate; DaysToGo = (New-TimeSpan -end $SingleDate.EOLDate -start (get-date -Format yyyy-MM-dd)).days})
     }
-}
 
 
 ### Output
@@ -59,16 +42,15 @@ foreach ($EOLDate in $FullyOSEOL) {
 write-host $CompsWithVersions.count " - Total computers found" 
 
 #Out of date
-write-host $OutOfDate.count " - Computers past end of life" -ForegroundColor Red
+write-host $SystemsWithEOLdays.count " - Computer on list"
 HashMarks
-$OutOfDate | Format-Table
 
-#Out of date in 1 year
-write-host $1yOutOfDate.count " - Computers going EOL in the next year" -ForegroundColor yellow
-HashMarks
-$1yOutOfDate  | Format-Table
+$SystemsWithEOLdays | Sort-Object DaystoGo, OS, OSver, Name | Format-Table
 
-# #Good for at least a year - Not needed if you remove the 'good for at least a year' section
-write-host $1yplusOutOfDate.count " - Computers with more than a year left till EOL"
-HashMarks
-$1yplusOutOfDate  | Format-Table
+
+<#  ### Stuff I'm keeping around for error checking ###
+$SystemsWithEOLdays2 = $SystemsWithEOLdays.name | sort-object
+$CompsWithVersions2 = $CompsWithVersions.name | sort-object
+
+Compare-Object $SystemsWithEOLdays2 $CompsWithVersions2 
+#>
