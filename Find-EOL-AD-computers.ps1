@@ -48,6 +48,7 @@ HashMarks
 
 $SystemsWithEOLdays | Sort-Object DaystoGo, OS, OSver, Name | Format-Table
 
+$SystemsWithEOLdays | sort-object DaystoGo | Group-Object -Property OS,OSver | Select-Object Name, Count
 
 <#  ### Stuff I'm keeping around for error checking ###
 $SystemsWithEOLdays2 = $SystemsWithEOLdays.name | sort-object
