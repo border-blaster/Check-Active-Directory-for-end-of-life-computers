@@ -11,3 +11,5 @@ Useage:
 - Run the script with apropiate credintals to read computer object OS and OS versions.
 - The script checks the csv hosted on gitup for OS, OS Version, and EOL information, so you 
   will need internet access to run. *Or you can download the csv and import directly.
+
+Information based on https://en.wikipedia.org/wiki/Windows_10_version_history
